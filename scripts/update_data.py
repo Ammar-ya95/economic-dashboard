@@ -2,7 +2,7 @@ import csv
 import io
 import json
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timezone\nfrom functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,7 +12,7 @@ WB_HOME = "https://data.worldbank.org/"
 
 def get_text(url):
     req = urllib.request.Request(url, headers={"User-Agent": "economic-dashboard/1.0"})
-    with urllib.request.urlopen(req, timeout=45) as r:
+    with urllib.request.urlopen(req, timeout=10) as r:
         return r.read().decode("utf-8")
 
 def fred(series_id):
@@ -31,7 +31,7 @@ def fred(series_id):
         raise ValueError(series_id)
     return vals
 
-def world_bank(country, indicator):
+@lru_cache(maxsize=None)\ndef world_bank(country, indicator):\n    print(f"Fetching World Bank {country} {indicator}...", flush=True)
     url = f"https://api.worldbank.org/v2/country/{country}/indicator/{indicator}?format=json&per_page=100"
     payload = json.loads(get_text(url))
     vals = []
