@@ -15,8 +15,11 @@ def get_text(url):
     with urllib.request.urlopen(req, timeout=10) as r:
         return r.read().decode("utf-8")
 
+@lru_cache(maxsize=None)
 def fred(series_id):
-    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
+    print(f"Fetching FRED {series_id}...", flush=True)
+    start_year = datetime.now(timezone.utc).year - 4
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}&cosd={start_year}-01-01"
     rows = list(csv.DictReader(io.StringIO(get_text(url))))
     vals = []
     for row in rows:
